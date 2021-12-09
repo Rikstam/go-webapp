@@ -27,7 +27,7 @@ func (u *Users) New(w http.ResponseWriter, r *http.Request) {
 // POST /signup
 // GET /signup
 func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
-	form := SignupForm{}
+	var form SignupForm
 
 	if err := parseForm(r, &form); err != nil {
 		panic(err)
