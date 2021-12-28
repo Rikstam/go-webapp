@@ -5,15 +5,8 @@ import (
 	"net/http"
 
 	"lenslocked.com/controllers"
-	"lenslocked.com/views"
 
 	"github.com/gorilla/mux"
-)
-
-var (
-	homeView    *views.View
-	contactView *views.View
-	faqView     *views.View
 )
 
 func notFound(w http.ResponseWriter, r *http.Request) {
