@@ -4,17 +4,20 @@ import (
 	"fmt"
 	"net/http"
 
+	"lenslocked.com/models"
 	"lenslocked.com/views"
 )
 
-func NewUsers() *Users {
+func NewUsers(us *models.UserService) *Users {
 	return &Users{
 		NewView: views.NewView("bootstrap", "users/new"),
+		us:      us,
 	}
 }
 
 type Users struct {
 	NewView *views.View
+	us      *models.UserService
 }
 
 // GET /signup
@@ -31,9 +34,18 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 	if err := parseForm(r, &form); err != nil {
 		panic(err)
 	}
-	fmt.Fprintln(w, "name is ", form.Name)
-	fmt.Fprintln(w, "email is ", form.Email)
-	fmt.Fprintln(w, "password is ", form.Password)
+	user := models.User{
+		Name:  form.Name,
+		Email: form.Email,
+	}
+
+	if err := u.us.Create(&user); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprintln(w, "user is ", user)
+
 }
 
 type SignupForm struct {

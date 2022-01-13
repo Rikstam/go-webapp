@@ -65,6 +65,7 @@ func (us *UserService) DestructiveReset() error {
 	return us.AutoMigrate()
 }
 
+// Create a new user
 func (us *UserService) Create(user *User) error {
 	return us.db.Create(user).Error
 }
