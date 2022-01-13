@@ -56,9 +56,13 @@ func (us *UserService) ByEmail(email string) (*User, error) {
 	return &user, err
 }
 
-func (us *UserService) DestructiveReset() {
-	us.db.DropTableIfExists(&User{})
+func (us *UserService) DestructiveReset() error {
+	err := us.db.DropTableIfExists(&User{}).Error
 	us.db.AutoMigrate(&User{})
+	if err != nil {
+		return err
+	}
+	return us.AutoMigrate()
 }
 
 func (us *UserService) Create(user *User) error {
@@ -86,4 +90,12 @@ func first(db *gorm.DB, destination interface{}) error {
 		return ErrNotFound
 	}
 	return err
+}
+
+// Automigrate will attempt to automatically migrate the users table
+func (us *UserService) AutoMigrate() error {
+	if err := us.db.AutoMigrate(&User{}).Error; err != nil {
+		return err
+	}
+	return nil
 }
