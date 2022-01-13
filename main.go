@@ -5,8 +5,16 @@ import (
 	"net/http"
 
 	"lenslocked.com/controllers"
+	"lenslocked.com/models"
 
 	"github.com/gorilla/mux"
+)
+
+const (
+	host   = "localhost"
+	port   = 5433
+	user   = "riksa"
+	dbname = "lenslocked_dev"
 )
 
 func notFound(w http.ResponseWriter, r *http.Request) {
@@ -15,6 +23,21 @@ func notFound(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// Create a DB connection string and then use it to
+	// create our model services.
+
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+
+	us, err := models.NewUserService(psqlInfo)
+
+	if err != nil {
+		panic(err)
+	}
+	defer us.Close()
+	us.AutoMigrate()
+
 	staticC := controllers.NewStatic()
 	usersC := controllers.NewUsers()
 	galleriesC := controllers.NewGalleries()
