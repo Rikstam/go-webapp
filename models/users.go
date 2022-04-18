@@ -21,6 +21,8 @@ type User struct {
 	PasswordHash string `gorm:"not null"`
 }
 
+var userPasswordPepper = "secret-random-string"
+
 type UserService struct {
 	db *gorm.DB
 }
@@ -70,8 +72,8 @@ func (us *UserService) DestructiveReset() error {
 
 // Create a new user
 func (us *UserService) Create(user *User) error {
-	hashedBytes, err := bcrypt.GenerateFromPassword(
-		[]byte(user.Password), bcrypt.DefaultCost)
+	passwordBytes := []byte(user.Password + userPasswordPepper)
+	hashedBytes, err := bcrypt.GenerateFromPassword(passwordBytes, bcrypt.DefaultCost)
 
 	if err != nil {
 		return err
